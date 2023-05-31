@@ -1,0 +1,44 @@
+digraph {
+	{
+		rank=same
+		A [label=Start]
+		B [label="Load Image 
+ (using cv2.imread)"]
+		C [label="Convert to HSV 
+ (using cv2.cvtColor)"]
+		D [label="Threshold for Yellow Colors 
+ (using cv2.inRange)"]
+		E [label="Bitwise-AND Original and Mask 
+ (using cv2.bitwise_and)"]
+	}
+	{
+		rank=same
+		F [label="Convert to Grayscale 
+ (using cv2.cvtColor)"]
+		G [label="Crop Image 
+ (using array slicing)"]
+		H [label="Apply Thresholding 
+ (using cv2.threshold)"]
+		I [label="Invert Colors 
+ (using cv2.bitwise_not)"]
+		J [label="Threshold Inverted Image 
+ (using cv2.threshold)"]
+	}
+	K [label="Resize Image 
+ (using cv2.resize)"]
+	L [label="OCR with EasyOCR 
+ (using easyocr.Reader.readtext)"]
+	M [label=End]
+	A -> B
+	B -> C
+	C -> D
+	D -> E
+	E -> F
+	F -> G
+	G -> H
+	H -> I
+	I -> J
+	J -> K
+	K -> L
+	L -> M
+}
