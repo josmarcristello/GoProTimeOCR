@@ -21,8 +21,9 @@ def extract_text(image, verbose = 0):
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
     # Define range for yellow color
-    lower_yellow = np.array([20, 85, 85])
-    upper_yellow = np.array([35, 225, 225])
+    lower_yellow = np.array([20, 70, 70])
+    #upper_yellow = np.array([35, 225, 225])
+    upper_yellow = np.array([60, 255, 255])
 
     # Threshold the HSV image to get only yellow colors
     mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
@@ -30,20 +31,21 @@ def extract_text(image, verbose = 0):
     # Bitwise-AND mask and original image
     res = cv2.bitwise_and(image, image, mask=mask)
 
-    if verbose:
-        cv2.imshow('Filtered Image', res)
-        cv2.waitKey(0)
+    #if verbose:
+        #cv2.imshow('Filtered Image', res)
+        #cv2.waitKey(0)
 
     # Convert the image to gray scale
     gray = cv2.cvtColor(res, cv2.COLOR_BGR2GRAY)
 
     # Show the grayscale image
-    if verbose:
-        cv2.imshow('Grayscale Image', gray)
-        cv2.waitKey(0)
+    #if verbose:
+        #cv2.imshow('Grayscale Image', gray)
+        #cv2.waitKey(0)
 
     # Crop the image (you will need to adjust these values)
-    cropped = gray[600:750, 850:1250]
+    #cropped = gray[600:750, 850:1250]
+    cropped = gray[1020:1150, 1200:1550]
 
     # Show the cropped image
     if verbose:
@@ -53,11 +55,18 @@ def extract_text(image, verbose = 0):
     # Apply thresholding
     _, thresh = cv2.threshold(cropped, 70, 85, cv2.THRESH_BINARY)
 
+    # Define the dilation kernel
+    kernel = np.ones((2,2),np.uint8)
+
+    # Apply dilation on the thresholded image
+    dilated = cv2.dilate(thresh, kernel, iterations = 3)
+
     # Invert the colors (white text on black background)
-    inverted = cv2.bitwise_not(thresh)
+    inverted = cv2.bitwise_not(dilated)
 
     # Threshold the inverted image to get black text on white background
     _, final = cv2.threshold(inverted, 220, 255, cv2.THRESH_BINARY_INV)
+
 
     # Resize the image to increase resolution
     enlarged = cv2.resize(final, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
@@ -80,6 +89,8 @@ def extract_text(image, verbose = 0):
     # Note: Good if you only want the numbers
     #numbers = re.findall(r'\d+', text)
     
+    #print(f"Text in image: {numbers}")
+    
     return text
 
 def image_metadata(filename, image):
@@ -93,7 +104,7 @@ with open('output/GOPRO_OCR.csv', 'w', newline='') as file:
     writer.writerow(['Filename', 'Text'])
 
     # Directory containing your images
-    directory = 'F:/Dropbox/Projects/011 - UofC Leak/Test/May 29/Station 2 - Energy Center/Go Pro/DCIM/'  # Update this path
+    directory = 'F:/Dropbox/Projects/011 - UofC Leak/Test/June 5/Station 2 - Energy Center/Go Pro/'  # Update this path
     
     # Initialize a list to hold all image files
     all_images = []
